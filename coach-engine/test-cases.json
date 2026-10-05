@@ -1,0 +1,68 @@
+[
+  {
+    "id": "it-value-vs-price",
+    "business": {
+      "name": "Harper IT Services",
+      "description": "Small IT company providing managed services, break-fix, networking and equipment supply.",
+      "people": "6",
+      "years": "3",
+      "goal": "Grow profitably without increasing owner stress.",
+      "concern": "Flat revenue, customer churn, late payments and too much owner workload."
+    },
+    "turns": [
+      "The business has not really grown for three years.",
+      "We gained about 12 customers but lost 10.",
+      "Most who left said our price was too high. Six moved to cheaper managed service providers.",
+      "Managed services is our strongest margin and recurring revenue.",
+      "We do monitoring, support, backups and security, but we don't give clients a monthly report showing what we actually do.",
+      "My wife spends about 20 hours a week chasing payments and doing customer administration.",
+      "I was thinking of hiring an admin person and cutting our prices to win more customers.",
+      "Actually, the biggest thing I want is less owner stress without reducing profit."
+    ],
+    "must_test": ["price as stated root cause", "customer value perception", "owner workload", "cash collection", "premature price cuts/hiring"]
+  },
+  {
+    "id": "paint-brand-pull",
+    "business": {
+      "name": "Example Paint Distribution",
+      "description": "Paint importer/distributor selling through resellers.",
+      "people": "12",
+      "years": "10",
+      "goal": "Build stronger brand pull and sustainable reseller demand.",
+      "concern": "Good margins but dealers hesitate to promote the brand."
+    },
+    "turns": [
+      "The business is actually quite profitable.",
+      "Our main issue is that established brands dominate attention and dealers don't push our product.",
+      "Dealers tell us customers ask for established brands by name.",
+      "We offer attractive dealer margins but many still don't actively promote us.",
+      "We spend a lot of time telling dealers that our quality is good.",
+      "I am considering doubling the dealer incentive and increasing advertising.",
+      "I don't know whether more incentives will create customer demand or just pay dealers more.",
+      "I want to know what I should prove before spending more."
+    ],
+    "must_test": ["dealer incentive vs end-customer demand", "brand evidence", "proof before spend"]
+  },
+  {
+    "id": "retail-second-location",
+    "business": {
+      "name": "Example Retailer",
+      "description": "One successful retail store with loyal customers and healthy margins.",
+      "people": "12",
+      "years": "8",
+      "goal": "Decide whether a second location is genuinely ready and sensible.",
+      "concern": "Considering a second store because the first is performing very well."
+    },
+    "turns": [
+      "Sales and margins are strong and customer loyalty is excellent.",
+      "The store manager runs most day-to-day operations.",
+      "I still handle supplier negotiations, cash decisions and unusual customer issues.",
+      "I believe a second store should work because the first store is successful.",
+      "I have not tested whether the first store performs for 30 days without me.",
+      "The second location would use about 40% of our available cash.",
+      "If it fails badly, we could survive but it would put pressure on the first store.",
+      "I am leaning toward opening, but I want to know whether I am seeing evidence or just confidence."
+    ],
+    "must_test": ["health vs readiness", "owner dependency", "capital/downside", "confidence vs evidence", "reversibility"]
+  }
+]
