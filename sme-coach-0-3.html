@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SME Coach — Open Business Case Test</title>
+<style>
+:root{--ink:#182236;--muted:#667085;--line:#dfe4ec;--bg:#f5f7fb;--navy:#13203a;--blue:#2457d6;--soft:#eef3ff;--good:#e8f7ef;--warn:#fff4df}
+*{box-sizing:border-box}body{margin:0;font:15px Arial,sans-serif;color:var(--ink);background:var(--bg)}header{background:var(--navy);color:white;padding:18px 24px;display:flex;justify-content:space-between;align-items:center}header b{font-size:20px}header span{font-size:12px;opacity:.8}nav{background:white;border-bottom:1px solid var(--line);padding:10px 18px;display:flex;gap:6px;flex-wrap:wrap}button{background:var(--blue);color:#fff;border:0;border-radius:8px;padding:10px 14px;cursor:pointer}button.alt{background:white;color:var(--blue);border:1px solid #b9c6e5}button.danger{background:#9f2c2c}.wrap{max-width:1050px;margin:0 auto;padding:20px}.card{background:white;border:1px solid var(--line);border-radius:13px;padding:20px;margin-bottom:16px;box-shadow:0 1px 2px #00000008}.hero{padding:30px}.hero h1{margin:0 0 10px;font-size:32px}.hero p{color:var(--muted);max-width:760px;line-height:1.55}.page.hidden{display:none}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}label{display:block;font-weight:700;margin:12px 0 5px}input,textarea,select{width:100%;padding:11px;border:1px solid #cbd3df;border-radius:8px;font:inherit}textarea{min-height:90px;resize:vertical}.chat{height:490px;overflow:auto;background:#f8faff;border:1px solid var(--line);border-radius:10px;padding:12px}.msg{padding:12px 14px;border-radius:11px;margin:9px 0;max-width:84%;line-height:1.45;white-space:pre-wrap}.coach{background:white;border:1px solid var(--line)}.owner{background:var(--soft);margin-left:auto}.tag{display:inline-block;background:#edf1f6;border-radius:20px;padding:5px 9px;font-size:12px;margin:2px}.good{background:var(--good)}.warn{background:var(--warn)}.muted{color:var(--muted)}.state{display:flex;gap:7px;flex-wrap:wrap}.row{display:flex;gap:8px;align-items:center}.row textarea{flex:1}.small{font-size:12px}.question{font-weight:700;color:var(--navy)}.result{border-left:4px solid var(--blue);padding:12px 14px;background:#f7f9ff;margin-top:12px}.feedback-box{background:#fbfcfe}.complete{background:var(--good);padding:16px;border-radius:10px}@media(max-width:720px){.grid,.grid2{grid-template-columns:1fr}.hero h1{font-size:26px}.msg{max-width:92%}}
+</style>
+</head>
+<body>
+<header><b>SME Coach</b><span>Open Business Case • Test Edition 0.3</span></header>
+<nav>
+<button onclick="show('home')">Home</button><button onclick="show('business')">My Business</button><button onclick="show('coach')">Talk to Coach</button><button onclick="show('decision')">Decision Coach</button><button onclick="show('actions')">Actions</button><button onclick="show('feedback')">Feedback</button>
+</nav>
+<div class="wrap">
+<section id="home" class="page">
+<div class="card hero">
+<h1>Your business is the conversation.</h1>
+<p>This test is deliberately open. Do not choose a prepared case. Enter a real business and a real situation, then talk to the Coach naturally. The goal is to discover whether the Coach understands, investigates, challenges and helps you decide.</p>
+<button onclick="newCase();show('business')">Start a new business case</button>
+</div>
+<div class="grid">
+<div class="card"><b>Understand</b><p class="muted">The Coach builds context instead of jumping to advice.</p></div>
+<div class="card"><b>Challenge</b><p class="muted">It tests assumptions and distinguishes evidence from belief.</p></div>
+<div class="card"><b>Act</b><p class="muted">Important conclusions can become actions and decisions.</p></div>
+</div>
+<div class="card"><b>Tester instruction</b><p class="muted">Use a problem you genuinely care about. Give the Coach enough information to work with, but do not try to make the test easy for it.</p></div>
+</section>
+
+<section id="business" class="page hidden">
+<div class="card"><h2>My Business</h2>
+<label>Business name</label><input id="bn" placeholder="e.g. Smith Electrical">
+<label>What does the business do?</label><textarea id="bd" placeholder="Briefly describe the business, customers and main products/services."></textarea>
+<div class="grid2"><div><label>People</label><input id="bs" placeholder="e.g. 8"></div><div><label>Years operating</label><input id="by" placeholder="e.g. 6"></div></div>
+<label>What do you want the business to achieve?</label><textarea id="bg" placeholder="e.g. grow profit, reduce owner workload, improve cash flow, decide whether to expand..."></textarea>
+<label>What is happening or worrying you?</label><textarea id="bp" placeholder="Describe the real issue in your own words."></textarea>
+<button onclick="saveBiz();show('coach')">Save & talk to Coach</button>
+</div></section>
+
+<section id="coach" class="page hidden">
+<div class="card"><h2>Talk to Coach</h2><p class="muted">Talk naturally. The prototype keeps a running case state and tries to choose the next useful line of enquiry.</p>
+<div class="state" id="state"></div>
+<div id="chat" class="chat"></div>
+<div class="row"><textarea id="msg" placeholder="Tell the Coach what is happening..."></textarea><button onclick="send()">Send</button></div>
+<div class="row"><button class="alt" onclick="summarise()">Show what I think is happening</button><button class="alt" onclick="newCase();show('business')">New case</button></div>
+</div>
+<div class="card"><h3>Working view</h3><div id="view" class="muted">Not enough information yet.</div></div>
+</section>
+
+<section id="decision" class="page hidden">
+<div class="card"><h2>Decision Coach</h2><p class="muted">Use this for a meaningful decision. It does not make the decision for you; it tests the thinking before you commit.</p>
+<label>What decision are you considering?</label><textarea id="dt"></textarea>
+<label>What outcome do you want?</label><textarea id="do"></textarea>
+<label>What evidence supports the decision?</label><textarea id="de"></textarea>
+<label>What are you assuming?</label><textarea id="da"></textarea>
+<label>What could go wrong?</label><textarea id="dr"></textarea>
+<button onclick="challenge()">Challenge my decision</button><div id="result"></div>
+</div>
+</section>
+
+<section id="actions" class="page hidden">
+<div class="card"><h2>Actions & commitments</h2><label>Action</label><input id="at" placeholder="What will you do?"><label>Due date</label><input id="ad" type="date"><button onclick="addAction()">Add action</button><div id="actionlist"></div></div>
+</section>
+
+<section id="feedback" class="page hidden">
+<div class="card feedback-box"><h2>Tester Feedback</h2>
+<p class="muted">Please complete this after using the Coach on a real problem. This is more important than whether you liked the design.</p>
+<label>Overall usefulness</label><select id="rating"><option></option><option>1 — Not useful</option><option>2</option><option>3</option><option>4</option><option>5 — Very useful</option></select>
+<label>Did it repeat questions or lose track?</label><select id="repeat"><option></option><option>Never</option><option>Once</option><option>Several times</option><option>Constantly</option></select>
+<label>Did it understand your business?</label><select id="under"><option></option><option>Yes, clearly</option><option>Mostly</option><option>Partly</option><option>No</option></select>
+<label>What made you think differently?</label><textarea id="useful"></textarea>
+<label>What was confusing, frustrating or generic?</label><textarea id="bad"></textarea>
+<label>Would you use it again for another business problem?</label><select id="again"><option></option><option>Definitely</option><option>Probably</option><option>Not sure</option><option>No</option></select>
+<label>Would you pay for this?</label><select id="pay"><option></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+<label>What would you pay for?</label><textarea id="paywhy" placeholder="e.g. solving a specific problem, decision review, business health review, ongoing coaching..."></textarea>
+<button onclick="saveFeedback()">Save feedback</button> <button class="alt" onclick="copyFeedback()">Copy feedback to clipboard</button> <button class="alt" onclick="exportFeedback()">Download feedback</button>
+<p id="fbmsg"></p>
+</div>
+</section>
+</div>
+
+<script>
+const K='smecoach03';
+let D=JSON.parse(localStorage.getItem(K)||'{"biz":{},"msgs":[],"facts":[],"beliefs":[],"unknowns":[],"focus":[],"actions":[],"feedback":[]}');
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function save(){localStorage.setItem(K,JSON.stringify(D));render();}
+function show(id){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));$(id).classList.remove('hidden');render();if(id==='coach'&&!D.msgs.length)welcome();}
+function newCase(){D={biz:{},msgs:[],facts:[],beliefs:[],unknowns:[],focus:[],actions:[],feedback:D.feedback||[]};save();}
+function saveBiz(){D.biz={name:$('bn').value.trim(),desc:$('bd').value.trim(),size:$('bs').value.trim(),years:$('by').value.trim(),goal:$('bg').value.trim(),problem:$('bp').value.trim()};save();}
+function welcome(){const n=D.biz.name||'your business';add('coach',`I’m ready to work with ${n}. Tell me what is happening in your own words. I’ll try to understand the situation before I advise you.`);}
+function add(w,t){D.msgs.push({w,t,time:new Date().toISOString()});renderChat();}
+function send(){let v=$('msg').value.trim();if(!v)return;add('owner',v);$('msg').value='';coach(v);}
+function tokens(t){return t.toLowerCase().split(/\W+/).filter(Boolean);}
+function coach(v){
+ const l=v.toLowerCase(), toks=tokens(v), recent=D.msgs.slice(-6).map(x=>x.t).join(' ').toLowerCase();
+ let r='',focus='';
+ const covered=new Set(D.focus);
+ if(/price|expensive|cheap|cost|margin|profit/.test(l)&&!covered.has('value')){focus='value';r='You’ve linked the situation to price or economics. I don’t want to treat that as the root cause yet. What evidence do you have that customers are actually rejecting you because of price, rather than because they do not see enough value?'}
+ else if(/customer|client|dealer|buyer|sales|lead|competition/.test(l)&&!covered.has('customer')){focus='customer';r='Let’s separate your view from the customer’s view. What are customers actually doing — buying repeatedly, buying less, leaving, delaying, or choosing competitors — and what do they themselves say is driving that behaviour?'}
+ else if(/cash|payment|late|debt|working capital/.test(l)&&!covered.has('cash')){focus='cash';r='Cash pressure may be a symptom rather than the underlying problem. Is the issue mainly late collection, weak margins, unpredictable sales, high costs, or a combination? What evidence tells you that?'}
+ else if(/staff|employee|team|wife|husband|workload|hours|owner/.test(l)&&!covered.has('owner')){focus='owner';r='I’m noticing the people/workload dimension. Before assuming you need another person, which activities consume most of the owner’s time, and which of those would disappear if the underlying business problem were fixed?'}
+ else if(/grow|growth|expand|branch|location|hire|invest/.test(l)&&!covered.has('growth')){focus='growth';r='Growth may be the answer, but it may also amplify an existing weakness. What has to be true about the current business for this growth decision to work, and which of those conditions have you actually proven?'}
+ else if(/system|software|ai|technology|automation/.test(l)&&!covered.has('technology')){focus='technology';r='Technology may help, but I don’t want to prescribe it before we define the business problem. What outcome are you trying to change, and what is happening today without the technology?'}
+ else {focus='evidence';r='I have that information. Rather than ask another generic question, I want to test the thinking. What is the strongest piece of evidence that this is the problem that matters most — and what evidence might prove you wrong?'}
+ D.focus.push(focus);
+ D.facts.push(v);
+ add('coach',r);
+}
+function summarise(){
+ if(!D.msgs.length){welcome();return}
+ const owner=D.msgs.filter(x=>x.w==='owner').map(x=>x.t).slice(-8);
+ if(!owner.length){add('coach','Tell me what is happening first. I’ll build the picture from what you tell me.');return}
+ const text=owner.join(' ');
+ let hypothesis='I’m not ready to call this a final diagnosis.';
+ if(/price|cheap|cost/.test(text.toLowerCase())&&/customer|client|sale/.test(text.toLowerCase())) hypothesis='Working hypothesis: there may be a value-perception or positioning problem, not simply a price problem.';
+ else if(/cash|late|payment/.test(text.toLowerCase())&&/sales|customer|client/.test(text.toLowerCase())) hypothesis='Working hypothesis: cash pressure may be interacting with sales quality or collection discipline.';
+ else if(/owner|wife|hours|workload|staff/.test(text.toLowerCase())) hypothesis='Working hypothesis: owner dependency or workload may be constraining the business.';
+ else if(/grow|expand|branch|location/.test(text.toLowerCase())) hypothesis='Working hypothesis: the key question is whether the existing model is ready to be replicated.';
+ D.beliefs.push(hypothesis);save();
+ $('view').innerHTML='<div class="result"><b>What I heard</b><p>'+esc(owner.join(' '))+'</p><b>What I’m beginning to think</b><p>'+esc(hypothesis)+'</p><b>Confidence</b><p>Working hypothesis — not a final diagnosis.</p></div>';
+}
+function challenge(){
+ let t=$('dt').value.trim(); if(!t){alert('Enter the decision first.');return}
+ let gaps=[];if(!$('do').value.trim())gaps.push('desired outcome');if(!$('de').value.trim())gaps.push('evidence');if(!$('da').value.trim())gaps.push('assumptions');if(!$('dr').value.trim())gaps.push('downside');
+ let test=gaps.length?'Before committing, I would test: '+gaps.join(', ')+'.':'You have supplied the basic decision inputs. I would now test which assumptions are unproven, what happens if results are 30% worse than expected, whether the decision is reversible, and how you will know within a defined period whether it is working.';
+ $('result').innerHTML='<div class="result"><b>Coach challenge</b><p>'+esc(test)+'</p><p><b>Important:</b> confidence is not evidence. You make the final decision.</p></div>';
+}
+function addAction(){let t=$('at').value.trim();if(!t)return;D.actions.push({t,d:$('ad').value,done:false});$('at').value='';$('ad').value='';save();}
+function toggleAction(i){D.actions[i].done=!D.actions[i].done;save();}
+function feedbackObj(){return{business:D.biz.name||'',rating:$('rating').value,repeat:$('repeat').value,under:$('under').value,useful:$('useful').value,bad:$('bad').value,again:$('again').value,pay:$('pay').value,paywhy:$('paywhy').value,date:new Date().toLocaleString()};}
+function saveFeedback(){D.feedback.push(feedbackObj());save();$('fbmsg').textContent='Feedback saved on this device. Please also send it to the product owner using the Copy button.';}
+function copyFeedback(){const f=feedbackObj();navigator.clipboard?.writeText(Object.entries(f).map(([k,v])=>k+': '+v).join('\n'));$('fbmsg').textContent='Feedback copied to clipboard.';}
+function exportFeedback(){const b=new Blob([JSON.stringify(feedbackObj(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='sme-coach-feedback.json';a.click();}
+function renderChat(){$('chat').innerHTML=D.msgs.map(m=>'<div class="msg '+(m.w==='coach'?'coach':'owner')+'"><b>'+(m.w==='coach'?'Coach':'You')+'</b><br>'+esc(m.t)+'</div>').join('');$('chat').scrollTop=$('chat').scrollHeight;}
+function render(){
+ if($('bn')){$('bn').value=D.biz.name||'';$('bd').value=D.biz.desc||'';$('bs').value=D.biz.size||'';$('by').value=D.biz.years||'';$('bg').value=D.biz.goal||'';$('bp').value=D.biz.problem||''}
+ renderChat();
+ if($('state'))$('state').innerHTML='<span class="tag good">Case: '+esc(D.biz.name||'Not named')+'</span><span class="tag">Owner inputs: '+D.msgs.filter(x=>x.w==='owner').length+'</span><span class="tag">Areas explored: '+new Set(D.focus).size+'</span><span class="tag">Actions: '+D.actions.length+'</span>';
+ if($('actionlist'))$('actionlist').innerHTML=D.actions.map((a,i)=>'<p><input type="checkbox" '+(a.done?'checked':'')+' onchange="toggleAction('+i+')"> '+esc(a.t)+' <span class="muted small">'+esc(a.d||'')+'</span></p>').join('')||'<p class="muted">No actions yet.</p>';
+}
+render();
+</script>
+</body></html>
