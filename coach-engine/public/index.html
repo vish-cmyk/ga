@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SME Coach — Real Engine Test</title>
+<style>
+body{margin:0;font:15px Arial;background:#f5f7fb;color:#182236}header{background:#13203a;color:white;padding:18px 24px}main{max-width:1050px;margin:auto;padding:20px}.card{background:#fff;border:1px solid #dde3ec;border-radius:12px;padding:20px;margin:15px 0}button{border:0;border-radius:8px;padding:10px 14px;background:#2457d6;color:#fff;cursor:pointer;margin:4px}button.alt{background:#fff;color:#2457d6;border:1px solid #bfcbe4}input,textarea,select{width:100%;padding:11px;box-sizing:border-box;border:1px solid #cbd4e0;border-radius:8px;margin:5px 0 12px;font:inherit}textarea{min-height:80px}.hidden{display:none}.chat{height:480px;overflow:auto;background:#f8faff;border:1px solid #e0e5ee;border-radius:10px;padding:12px}.m{padding:12px 14px;border-radius:10px;margin:9px 0;max-width:84%;white-space:pre-wrap;line-height:1.5}.c{background:#fff;border:1px solid #dde3ec}.u{background:#edf3ff;margin-left:auto}.muted{color:#667085}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.pill{display:inline-block;padding:5px 9px;background:#edf1f6;border-radius:20px;font-size:12px;margin:2px}.good{background:#e8f7ef}.result{border-left:4px solid #2457d6;background:#f7f9ff;padding:12px 15px;margin-top:12px}@media(max-width:700px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><b>SME Coach</b> — Real Coach Engine Test</header>
+<main>
+<section id="setup">
+<div class="card">
+<h1>Start a real business case</h1>
+<p class="muted">Use a real business and a real concern. Do not choose a prepared scenario.</p>
+<label>Business name</label><input id="name" placeholder="Example: Smith Electrical">
+<label>What does the business do?</label><textarea id="desc"></textarea>
+<div class="grid"><div><label>People</label><input id="people"></div><div><label>Years operating</label><input id="years"></div></div>
+<label>What do you want the business to achieve?</label><textarea id="goal"></textarea>
+<label>What is happening or worrying you?</label><textarea id="concern"></textarea>
+<button onclick="start()">Start Coaching</button>
+</div>
+</section>
+
+<section id="coach" class="hidden">
+<div class="card">
+<div><span class="pill good" id="bizpill"></span><span class="pill" id="mode"></span></div>
+<div id="chat" class="chat"></div>
+<div class="grid"><textarea id="msg" placeholder="Continue the conversation..."></textarea><div><button onclick="send()">Send</button><button class="alt" onclick="showState()">Show working view</button><button class="alt" onclick="location.reload()">New case</button></div></div>
+</div>
+<div class="card"><h3>Working view</h3><div id="view" class="muted">The Coach will build this as evidence accumulates.</div></div>
+</section>
+
+<section id="feedback" class="hidden">
+<div class="card">
+<h2>Tester feedback</h2>
+<p class="muted">Use this after the conversation. Honest negative feedback is more useful than compliments.</p>
+<label>Overall usefulness</label><select id="rating"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+<label>Did the Coach repeat or forget information?</label><select id="repeat"><option></option><option>Never</option><option>Once</option><option>Several times</option><option>Constantly</option></select>
+<label>Did it understand the business?</label><select id="under"><option></option><option>Clearly</option><option>Mostly</option><option>Partly</option><option>No</option></select>
+<label>What made you think differently?</label><textarea id="useful"></textarea>
+<label>What felt generic, frustrating or inefficient?</label><textarea id="bad"></textarea>
+<label>Would you use it again?</label><select id="again"><option></option><option>Definitely</option><option>Probably</option><option>Not sure</option><option>No</option></select>
+<label>Would you pay for it?</label><select id="pay"><option></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+<button onclick="submitFeedback()">Submit feedback</button>
+<p id="fb"></p>
+</div></section>
+</main>
+<script>
+let sessionId=null,lastResponse=null;
+const $=id=>document.getElementById(id);
+async function post(url,body){const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw new Error(j.error||'Request failed');return j}
+async function start(){try{
+ const s=await post('/api/session',{});sessionId=s.session_id;
+ await post('/api/business',{session_id:sessionId,business:{name:$('name').value,description:$('desc').value,people:$('people').value,years:$('years').value,goal:$('goal').value,concern:$('concern').value}});
+ $('setup').classList.add('hidden');$('coach').classList.remove('hidden');$('feedback').classList.remove('hidden');$('bizpill').textContent=$('name').value||'Business case';
+ add('c','I’m ready. Tell me what is happening in your own words. I’ll build the picture before jumping to advice.');
+}catch(e){alert(e.message)}}
+function add(w,t){const d=document.createElement('div');d.className='m '+(w==='c'?'c':'u');d.textContent=(w==='c'?'Coach: ':'You: ')+t;$('chat').appendChild(d);$('chat').scrollTop=$('chat').scrollHeight}
+async function send(){const v=$('msg').value.trim();if(!v)return;add('u',v);$('msg').value='';
+try{const j=await post('/api/message',{session_id:sessionId,message:v});lastResponse=j;$('mode').textContent=j.mode;add('c',j.reply);renderState(j)}catch(e){add('c','Technical error: '+e.message)}}
+function renderState(j){const d=j.working_diagnosis,s=j.state;$('view').innerHTML='<div class="result"><b>Working diagnosis</b><p>'+esc(d.statement)+'</p><b>Confidence:</b> '+esc(d.confidence)+'<hr><b>Focus:</b> '+esc(s.focus_area||'not established')+'<br><b>Facts:</b> '+s.facts.length+' | <b>Unknowns:</b> '+s.unknowns.length+' | <b>Contradictions:</b> '+s.contradictions.length+'</div>'}
+function showState(){if(lastResponse)renderState(lastResponse);else alert('Start the conversation first.')}
+async function submitFeedback(){try{const answers={rating:$('rating').value,repeat:$('repeat').value,understanding:$('under').value,useful:$('useful').value,bad:$('bad').value,again:$('again').value,pay:$('pay').value};await post('/api/feedback',{session_id:sessionId,answers});$('fb').textContent='Feedback submitted. Thank you.'}catch(e){$('fb').textContent='Could not submit feedback: '+e.message}}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+</script>
+</body>
+</html>
