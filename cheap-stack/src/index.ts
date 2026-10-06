@@ -1,7 +1,6 @@
 export interface Env {
   DB: D1Database;
-  OPENROUTER_API_KEY: string;
-  COACH_MODEL?: string;
+  AI: Ai;
 }
 
 type Business = {
@@ -71,14 +70,10 @@ function json(data: unknown, status=200) {
 }
 
 async function ai(env:Env, prompt:string):Promise<string> {
-  const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{
-    method:"POST",
-    headers:{"Authorization":"Bearer "+env.OPENROUTER_API_KEY,"Content-Type":"application/json","HTTP-Referer":"https://sme-business-coach.workers.dev","X-Title":"SME Business Coach"},
-    body:JSON.stringify({model:env.COACH_MODEL||"z-ai/glm-4.7-flash",messages:[{role:"system",content:SYSTEM},{role:"user",content:prompt}],temperature:0.2,max_tokens:1800})
-  });
-  const body=await res.json() as any;
-  if(!res.ok) throw new Error(body?.error?.message||"AI provider error");
-  return body?.choices?.[0]?.message?.content||"";
+  const response=await env.AI.run("@cf/zai-org/glm-4.7-flash",{messages:[{role:"system",content:SYSTEM},{role:"user",content:prompt}],temperature:0.2,max_tokens:1800});
+  if(typeof response==="string") return response;
+  const body=response as any;
+  return body?.response || body?.result || body?.choices?.[0]?.message?.content || "";
 }
 
 function parse(text:string){
