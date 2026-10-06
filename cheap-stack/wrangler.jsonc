@@ -4,5 +4,5 @@
   "main":"src/index.ts",
   "compatibility_date":"2026-10-01",
   "d1_databases":[{"binding":"DB","database_name":"sme-business-coach-db"}],
-  "vars":{"COACH_MODEL":"z-ai/glm-4.7-flash"}
+  "ai":{"binding":"AI"}
 }
