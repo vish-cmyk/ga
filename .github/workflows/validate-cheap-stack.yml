@@ -1,0 +1,23 @@
+name: Validate cheap stack
+
+on:
+  push:
+    branches: [cheap-stack]
+  pull_request:
+    branches: [cheap-stack]
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cheap-stack
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: cheap-stack/package.json
+      - run: npm install
+      - run: npm run check
