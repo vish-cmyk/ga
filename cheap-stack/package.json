@@ -1,0 +1,7 @@
+{
+  "name":"sme-business-coach-cheap-stack",
+  "private":true,
+  "type":"module",
+  "scripts":{"dev":"wrangler dev","deploy":"wrangler deploy","check":"tsc --noEmit"},
+  "devDependencies":{"@cloudflare/workers-types":"^4.20261001.0","typescript":"^5.9.2","wrangler":"^4.40.0"}
+}
